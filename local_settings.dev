@@ -1,0 +1,5 @@
+
+
+
+exports.server_ip       = '192.168.10.192';
+exports.server_port     = 8000
