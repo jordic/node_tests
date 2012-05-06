@@ -1,0 +1,105 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      function random(n1,n2) {
+              return n1 + Math.floor(Math.random()*(n2-n1+1));
+              }
+      
+      function log(message)
+      {
+        $('#logger').val( $('#logger').val() + "\n" + message )
+      }
+      
+      var socket = io.connect('http://192.168.10.192:8000')
+        , clients  = {}
+        , id;
+      
+      // new client  
+      socket.on('new', function(data){
+        //console.log('new client', data);
+        clients[data.id] = new Cursor(data.id)
+        log('new cursor:' + data.id)
+              
+      });
+
+      socket.on('update', function(data){
+        //console.log(data)
+        clients[data.id].set( data )
+      })
+      
+      socket.on('init', function(data){
+        log('init')
+        $.each(data, function(i,v){
+          clients[v] = new Cursor(v)
+          console.log(v)
+        });
+        
+        console.log(data)
+        
+      })
+      
+      socket.on('id', function(data){
+        log('received id', data)
+        id = data
+      })
+      
+      socket.on('delete', function(data){
+        log('removelelemtn' + data)
+        $('#'+data).fadeIn(1000, function(){
+          $('#'+data).remove()
+        })
+      })
+      
+      socket.on('disconnect', function(data){
+        for(k in clients) {
+          $('#' + k).remove()
+        }
+        clients = {}
+        
+      })
+      
+      /*setInterval(function(){
+        socket.emit('my event', {counter:ct++})
+      }, 500)*/
+      
+      function Cursor(id){
+        
+        this.id = id
+        var p = this
+        var element = '<div id="'+ this.id +'" style="position:absolute"><img src="/static/mouse.png" />' + this.id + '</div>'
+        $('body').append(element)        
+        $('#'+this.id).css('opacity', 0.5)
+        this.set = function(obj)
+        {
+          $('#'+p.id).css({
+            'left':  obj.x, 
+            'top':   obj.y 
+            })  
+        }        
+        
+        return this;
+
+      }
+      
+            
+      
+      
+      $(document).ready(function(){
+        
+        $(document).mousemove(function(e){
+          socket.emit('move', {x:e.pageX, y:e.pageY, id:id})
+        })
+        
+      })
+      
+      
+    </script>
+  </head>
+  <body style="position:relative">
+    <textarea id="logger" style="position:absolute; bottom:0px; right:0px; height:50px; width:300px"></textarea>
+
+
+  </body>
+</html>
