@@ -2,70 +2,11 @@
 <head>
   
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-
+  <script src="static/Drawers.js"> </script>
 <script>
 
+
 $(document).ready(function(){
-  
-  //var canvas = document.getElementById('drawer');
-  
-  InteractiveDrawer = function(drawer)
-  {
-      this.ox = null;
-      this.oy = null;
-      this.drawer = drawer
-      var p = this
-      this.drawing = false
-      
-      this.drawStart = function(e)
-      {
-        p.ox = e.pageX
-        p.oy = e.pageY 
-        p.drawing = true
-      }  
-
-      this.draw = function(e)
-      {
-        if(p.drawing) {
-          p.drawer.draw( p.ox, p.oy, e.pageX, e.pageY )
-          p.ox = e.pageX
-          p.oy = e.pageY
-        }
-      
-      }
-
-      this.drawEnd = function(e)
-      {
-        p.draw(e)
-        p.drawing = false
-      }
-
-      $(document).bind('mousedown', this.drawStart);
-      $(document).bind('mousemove', this.draw);
-      $(document).bind('mouseup', this.drawEnd);
-      
-  }
-  
-  
-  Drawer = function(ct)
-  {
-      var canvas = ct
-    
-      this.draw = function(x1, y1, x2, y2)
-      {
-        //console.log(x1,y1,x2,y2)  
-        ctx = canvas.getContext('2d')      
-        ctx.strokeStyle = '#666';
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.closePath();
-        ctx.stroke()
-
-      }
-  
-  }
-  
   
   
   function init()
@@ -77,8 +18,14 @@ $(document).ready(function(){
     $('body').append( '<canvas id="drawer" width=' +w + ' height=' + h + '></canvas>' )
     
     canvas = document.getElementById('drawer')
-    d = new Drawer( canvas )
-    c = new InteractiveDrawer(d)
+    variable_line = new VariableLineDrawer( canvas )
+    drawers = new Drawers()
+    drawers.add(variable_line)
+        
+    c = new InteractiveDrawer()
+    $(document).bind('draw', drawers.draw )
+    
+    
     
   }
   
