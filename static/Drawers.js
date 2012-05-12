@@ -83,8 +83,8 @@ VariableLineDrawer = function(ct)
   {
     //console.log(x1, y1, x2, y2)
     ctx = canvas.getContext('2d')      
-    //ctx.strokeStyle = get_random_color();
-    ctx.strokeStyle = '#666'
+    ctx.strokeStyle = get_random_color();
+    //ctx.strokeStyle = '#666'
     ctx.lineWidth = random(1,10)/3
     ctx.beginPath();
     ctx.moveTo(x1, y1);

@@ -30,7 +30,9 @@ $(document).ready(function(){
     w = $(document).width()
     h = $(document).height()
     
-    $('body').append( '<canvas id="drawer" width=' +w + ' height=' + h + '></canvas>' )
+    alert(w + "," + h)
+    
+    $('body').append( '<canvas id="drawer" width=' +w+  ' height='+h+'></canvas>' )
     
     canvas = document.getElementById('drawer')
     variable_line = new VariableLineDrawer( canvas )
@@ -60,7 +62,7 @@ $(document).ready(function(){
 </script>
 </head>
 
-<body style="margin:0px">
+<body style="margin:0px; width:100%; height:100%; font-size:100%; min-height:100%">
 
 
 
