@@ -7,6 +7,21 @@
 
 
 $(document).ready(function(){
+
+  
+  
+  // socket tester
+  socket = {}
+  socket.emit = function(event, obj) {
+    //console.log(event, obj)
+    obj.x1 += 100;
+    obj.x2 += 100;
+    obj.y1 += 100;
+    obj.y2 += 100;
+    obj.type = 'LineDrawer'
+    socket.receiver.draw(obj)
+  }
+  
   
   
   function init()
@@ -19,12 +34,20 @@ $(document).ready(function(){
     
     canvas = document.getElementById('drawer')
     variable_line = new VariableLineDrawer( canvas )
+    line_drawer = LineDrawer( canvas )
+    
     drawers = new Drawers()
     drawers.add(variable_line)
-        
+    drawers.add(line_drawer)
+  
+    sender = new DrawerSender()
     c = new InteractiveDrawer()
-    $(document).bind('draw', drawers.draw )
+  
+    socket.receiver = new DrawerReceiver()
+    socket.receiver.set_drawer( drawers )
     
+    $(document).bind('draw', drawers.draw )
+    $(document).bind('draw', sender.draw )
     
     
   }

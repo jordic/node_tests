@@ -40,6 +40,10 @@ io.sockets.on('connection', function(socket){
         //console.log(data)
     }) 
     
+    socket.on('draw', function(data) {
+        socket.broadcast.emit('draw', data )
+    })
+    
     socket.on('disconnect', function () { 
         delete users[current]
         socket.broadcast.emit('delete', current)

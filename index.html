@@ -2,7 +2,17 @@
   <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="/static/Drawers.js"> </script>
+    
     <script>
+    Object.size = function(obj) {
+        var size = 0, key;
+        for (key in obj) {
+            if (obj.hasOwnProperty(key)) size++;
+        }
+        return size;
+    };
+    
       function random(n1,n2) {
               return n1 + Math.floor(Math.random()*(n2-n1+1));
               }
@@ -12,7 +22,7 @@
         $('#logger').val( $('#logger').val() + "\n" + message )
       }
       
-      var socket = io.connect('http://192.168.10.192:8000')
+      var socket = io.connect('http://localhost:8000')
         , clients  = {}
         , id;
       
@@ -21,7 +31,7 @@
         //console.log('new client', data);
         clients[data.id] = new Cursor(data.id)
         log('new cursor:' + data.id)
-              
+        $('#TDrawers').text(Object.size(clients))      
       });
 
       socket.on('update', function(data){
@@ -35,7 +45,7 @@
           clients[v] = new Cursor(v)
           //console.log(v)
         });
-        
+        $('#TDrawers').text(Object.size(clients))      
         //console.log(data)
         
       })
@@ -50,6 +60,7 @@
         $('#'+data).fadeIn(1000, function(){
           $('#'+data).remove()
         })
+        $('#TDrawers').text(Object.size(clients))
       })
       
       socket.on('disconnect', function(data){
@@ -60,15 +71,12 @@
         
       })
       
-      /*setInterval(function(){
-        socket.emit('my event', {counter:ct++})
-      }, 500)*/
-      
+
       function Cursor(id){
         
         this.id = id
         var p = this
-        var element = '<div id="'+ this.id +'" style="position:absolute"><img src="/static/mouse.png" />' + this.id + '</div>'
+        var element = '<div id="'+ this.id +'" style="position:absolute;"><img src="/static/mouse.png" />&nbsp</div>'
         $('body').append(element)        
         $('#'+this.id).css('opacity', 0.5)
         this.set = function(obj)
@@ -82,23 +90,73 @@
         return this;
 
       }
-      
             
-      
       
       $(document).ready(function(){
         
-        $(document).mousemove(function(e){
-          socket.emit('move', {x:e.pageX, y:e.pageY, id:id})
-        })
+        
+        function init()
+        {
+          // inicialitzo el canvas
+          w = $(document).width()
+          h = $(document).height()
+
+          $('body').append( '<canvas id="drawer" width=' +w + ' height=' + h + '></canvas>' )
+
+          canvas = document.getElementById('drawer')
+          variable_line = new VariableLineDrawer( canvas )
+          line_drawer = LineDrawer( canvas )
+
+          drawers = new Drawers()
+          drawers.add(variable_line)
+          drawers.add(line_drawer)
+
+          sender = new DrawerSender()
+          c = new InteractiveDrawer()
+
+          receiver = new DrawerReceiver()
+          receiver.set_drawer( drawers )
+          socket.on('draw', function(data){
+             //console.log('draw')
+              receiver.draw(data)
+          })
+
+
+          $(document).bind('draw', drawers.draw )
+          $(document).bind('draw', sender.draw )
+
+          $(document).mousemove(function(e){
+            socket.emit('move', {x:e.pageX, y:e.pageY, id:id})
+          })
+          
+          
+
+        }
+
+        setTimeout(init, 300)
+        
         
       })
-      
-      
     </script>
+    <style>
+      #info { 
+        color:#fff;
+        position:absolute; width:150px; padding:10px; background-color:#000;
+        right:0; font-family:'Lucida Grande', Arial, sans-serif; font-size:12px;  text-align: right;
+      }
+      #info a { color:#fff; }
+      h2 { margin-bottom:0px; font-size:12px; }
+    
+    </style>
   </head>
-  <body style="position:relative">
-    <textarea id="logger" style="position:absolute; bottom:0px; right:0px; height:50px; width:300px"></textarea>
+  <body style="position:relative; margin:0px">
+    <div id="info">
+      <h2>Interactive Drawer 0.1 >> by jordic</h2>
+      Drag to Draw<br>
+      Remote drawers: <span id="TDrawers"></span><br />
+      <a href="https://github.com/jordic/node_tests">Fork Me on github</a>
+    </div>
+    <textarea id="logger" style="position:absolute; bottom:0px; right:0px; height:50px; width:300px; display:none"></textarea>
 
 
   </body>
