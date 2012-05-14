@@ -44,6 +44,10 @@ io.sockets.on('connection', function(socket){
         socket.broadcast.emit('draw', data )
     })
     
+    socket.on('ping', function(data){
+        socket.emit('ping', {})
+    })
+    
     socket.on('disconnect', function () { 
         delete users[current]
         socket.broadcast.emit('delete', current)

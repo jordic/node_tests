@@ -24,7 +24,8 @@
       
       var socket = io.connect('http://localhost:8000')
         , clients  = {}
-        , id;
+        , id
+        , ptime;
       
       // new client  
       socket.on('new', function(data){
@@ -50,9 +51,16 @@
         
       })
       
+      socket.on("ping", function(data){
+        ntime =  (new Date()).getTime()
+        total = ntime - ptime
+        $('#TPing').text( total + " ms" )        
+      })
+      
       socket.on('id', function(data){
         log('received id', data)
         id = data
+        
       })
       
       socket.on('delete', function(data){
@@ -60,6 +68,7 @@
         $('#'+data).fadeIn(1000, function(){
           $('#'+data).remove()
         })
+        delete clients[data]
         $('#TDrawers').text(Object.size(clients))
       })
       
@@ -135,6 +144,12 @@
 
         setTimeout(init, 300)
         
+        setInterval(function(){
+            socket.emit('ping', {})
+            ptime =  (new Date()).getTime()
+        }, 2000);
+        
+        
         
       })
     </script>
@@ -146,6 +161,7 @@
       }
       #info a { color:#fff; }
       h2 { margin-bottom:0px; font-size:12px; }
+      #info span { color:red;  }
     
     </style>
   </head>
@@ -154,6 +170,7 @@
       <h2>Interactive Drawer 0.1 >> by jordic</h2>
       Drag to Draw<br>
       Remote drawers: <span id="TDrawers"></span><br />
+      Ping:  <span id="TPing"> </span><br />
       <a href="https://github.com/jordic/node_tests">Fork Me on github</a>
     </div>
     <textarea id="logger" style="position:absolute; bottom:0px; right:0px; height:50px; width:300px; display:none"></textarea>
