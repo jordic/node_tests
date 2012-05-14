@@ -1,0 +1,26 @@
+COPERATIVE SOCKET.IO DRAWER
+===============================
+Author: Jordi Collell 
+jordic<at>gmail.com
+
+
+Realtime drawing using canvas object. Support FF, Safari and Chrome.
+Using node + socket.io + express
+
+This is a test project and will evolve, at the point only drawing with a custom 
+Shape is supported. No shape change, no exportable, no... but will be added.
+
+
+Future plans:
+
+- Export canvas object to png
+- Add shapes and rubbers. Add colors.
+- Create draw rooms. At this momment only drawing on general room is supported.
+- Add chromeframe support, actually not tested
+
+
+Features:
+------------
+- Ping calculus.
+- Mouse tracking for drawers.
+
